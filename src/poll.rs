@@ -1,4 +1,4 @@
-use crate::ffi::{self, epoll_create};
+use crate::ffi;
 use std::{
     io::{Error, Result},
     net::TcpStream,
@@ -13,7 +13,7 @@ pub struct Poll {
 
 impl Poll {
     pub fn new() -> Result<Self> {
-        let res = unsafe { ffi::epoll_create(0) };
+        let res = unsafe { ffi::epoll_create1(0) };
         if res < 0 {
             return Err(Error::last_os_error());
         }
