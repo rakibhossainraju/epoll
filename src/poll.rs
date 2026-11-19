@@ -18,7 +18,7 @@ impl Poll {
             return Err(Error::last_os_error());
         }
         Ok(Self {
-            registry: Registry{ raw_fd: res },
+            registry: Registry { raw_fd: res },
         })
     }
 
@@ -30,10 +30,8 @@ impl Poll {
         let fd = self.registry.raw_fd;
         let timeout = timeout.unwrap_or(-1);
         let max_events = events.capacity() as i32;
-        let res = unsafe {
-            ffi::epoll_wait(fd, events.as_mut_ptr(), max_events, timeout)
-        };
-        if res < 0  {
+        let res = unsafe { ffi::epoll_wait(fd, events.as_mut_ptr(), max_events, timeout) };
+        if res < 0 {
             return Err(Error::last_os_error());
         }
         unsafe { events.set_len(res as usize) }
@@ -49,9 +47,7 @@ impl Registry {
     pub fn register(&self, source: &TcpStream, token: usize, interests: i32) -> Result<()> {
         let mut event = ffi::Event::new(interests as u32, token);
         let op = ffi::EPOLL_CTL_ADD;
-        let res = unsafe {
-            ffi::epoll_ctl(self.raw_fd, op, source.as_raw_fd(), &mut event)
-        };
+        let res = unsafe { ffi::epoll_ctl(self.raw_fd, op, source.as_raw_fd(), &mut event) };
         if res < 0 {
             return Err(Error::last_os_error());
         }
@@ -60,9 +56,7 @@ impl Registry {
 }
 impl Drop for Registry {
     fn drop(&mut self) {
-        let res = unsafe {
-            ffi::close(self.raw_fd)
-        };
+        let res = unsafe { ffi::close(self.raw_fd) };
         if res < 0 {
             let err = Error::last_os_error();
             eprintln!("ERROR: {err:?}");
