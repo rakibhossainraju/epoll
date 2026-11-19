@@ -1,7 +1,7 @@
 mod ffi;
 mod poll;
 
-use std::{io::{self, Read, Result, Write}, net::TcpStream};
+use std::{io::{self, Read, Result, Write}, net::TcpStream, thread, time::Duration};
 use ffi::Event;
 use poll::Poll;
 
@@ -28,7 +28,7 @@ fn main() -> Result<()> {
 
         streams.push(stream);
     }
-
+    thread::sleep(Duration::from_secs(20));
     Ok(())
 }
 
