@@ -1,6 +1,6 @@
 use std::io::Result;
 
-use event_queue::{client, epoll::Poll};
+use epoll::{client, epoll::Poll};
 
 const HOST: &str = "localhost";
 const PORT: u16 = 8080;

@@ -1,4 +1,4 @@
-# event_queue
+# epoll
 
 A small, from-scratch event queue built directly on Linux `epoll`, with no
 `mio`, no `tokio` and no `libc` crate. It exists to show how an event loop
