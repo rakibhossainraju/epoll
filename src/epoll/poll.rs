@@ -2,7 +2,7 @@ use super::{ffi, registry::Registry};
 use std::io::{Error, Result};
 
 pub struct Poll {
-    pub registry: Registry,
+    registry: Registry,
 }
 
 impl Poll {

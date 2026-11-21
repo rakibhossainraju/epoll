@@ -29,6 +29,7 @@ impl Connections {
         let mut finished = 0;
         for event in events {
             if let Some(conn) = self.state.get_mut(&event.token()) {
+                println!("RECEIVED: {event:?}");
                 finished += conn.read_available()? as usize;
             }
         }

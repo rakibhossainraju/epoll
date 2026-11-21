@@ -3,21 +3,20 @@ use std::{
     io::{Error, Result},
     net::TcpStream,
     os::fd::AsRawFd,
-    sync::atomic::{AtomicUsize, Ordering},
 };
 
 pub type RegisterId = usize;
 
 pub struct Registry {
-    pub raw_fd: i32,
-    current_id: AtomicUsize,
+    pub(super) raw_fd: i32,
+    current_id: RegisterId,
 }
 
 impl Registry {
     pub fn new(raw_fd: i32) -> Self {
         Self {
             raw_fd,
-            current_id: AtomicUsize::new(0),
+            current_id: 0,
         }
     }
     pub fn register(&mut self, source: &TcpStream, interests: i32) -> Result<RegisterId> {
@@ -33,8 +32,9 @@ impl Registry {
         Ok(token)
     }
 
-    fn next_id(&self) -> RegisterId {
-        self.current_id.fetch_add(1, Ordering::Relaxed) + 1
+    fn next_id(&mut self) -> RegisterId {
+        self.current_id += 1;
+        self.current_id
     }
 }
 
