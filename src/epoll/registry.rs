@@ -1,4 +1,4 @@
-use crate::ffi;
+use super::ffi;
 use std::{
     io::{Error, Result},
     net::TcpStream,

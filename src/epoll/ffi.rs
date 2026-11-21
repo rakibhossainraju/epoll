@@ -1,4 +1,4 @@
-use crate::registry::RegisterId;
+use super::registry::RegisterId;
 
 pub const EPOLL_CTL_ADD: i32 = 1;
 pub const EPOLLIN: i32 = 0x1;

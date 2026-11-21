@@ -1,6 +1,7 @@
 use std::{collections::HashMap, io::Result, net::TcpStream};
 
-use crate::{connection::Connection, ffi::Event, registry::RegisterId};
+use super::connection::Connection;
+use crate::epoll::{Event, RegisterId};
 
 #[derive(Default)]
 pub struct Connections {

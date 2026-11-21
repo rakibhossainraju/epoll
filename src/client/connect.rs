@@ -3,7 +3,11 @@ use std::{
     net::TcpStream,
 };
 
-use crate::{connections::Connections, ffi, poll::Poll, utils::get_req};
+use super::http::get_req;
+use crate::{
+    epoll::{self, Poll},
+    net::Connections,
+};
 
 /// Opens `n` non-blocking requests against the delay server and registers
 /// each one with `poll`. Later requests get shorter delays.
@@ -20,7 +24,7 @@ pub fn open_requests(poll: &mut Poll, addr: &str, n: usize) -> Result<Connection
 
         let token = poll
             .registry()
-            .register(&stream, ffi::EPOLLIN | ffi::EPOLLET)?;
+            .register(&stream, epoll::EPOLLIN | epoll::EPOLLET)?;
         connections.add(token, stream);
     }
 

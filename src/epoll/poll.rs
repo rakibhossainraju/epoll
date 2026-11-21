@@ -1,4 +1,4 @@
-use crate::{ffi, registry::Registry};
+use super::{ffi, registry::Registry};
 use std::io::{Error, Result};
 
 pub struct Poll {

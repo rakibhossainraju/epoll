@@ -1,14 +1,6 @@
-mod client;
-mod connection;
-mod connections;
-mod ffi;
-mod poll;
-mod registry;
-mod utils;
-
 use std::io::Result;
 
-use poll::Poll;
+use event_queue::{client, epoll::Poll};
 
 const HOST: &str = "localhost";
 const PORT: u16 = 8080;
@@ -28,6 +20,6 @@ fn main() -> Result<()> {
         finished += connections.handle(&events)?;
     }
 
-    println!("\n------\nFINISHED");
+    println!("FINISHED");
     Ok(())
 }
