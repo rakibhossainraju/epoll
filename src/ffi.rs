@@ -1,3 +1,5 @@
+use crate::registry::RegisterId;
+
 pub const EPOLL_CTL_ADD: i32 = 1;
 pub const EPOLLIN: i32 = 0x1;
 pub const EPOLLET: i32 = 1 << 31;
@@ -9,6 +11,8 @@ unsafe extern "C" {
     pub unsafe fn epoll_ctl(epfd: i32, op: i32, fd: i32, event: *mut Event) -> i32;
     pub unsafe fn epoll_wait(epfd: i32, events: *mut Event, max_events: i32, timeout: i32) -> i32;
 }
+
+pub type Events = Vec<Event>;
 
 #[derive(Debug)]
 #[repr(C, packed)]
@@ -22,7 +26,7 @@ impl Event {
         Self { events, epoll_data }
     }
 
-    pub fn token(&self) -> usize {
+    pub fn token(&self) -> RegisterId {
         self.epoll_data
     }
 }
