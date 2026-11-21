@@ -5,28 +5,20 @@ use std::{
 
 pub struct Connection {
     stream: TcpStream,
-    closed: bool,
 }
 
 impl Connection {
     pub fn new(stream: TcpStream) -> Self {
-        Self {
-            stream,
-            closed: false,
-        }
+        Self { stream }
     }
 
     /// Reads until `WouldBlock` or EOF (required for edge-triggered epoll).
-    /// Returns `true` only the first time EOF is seen.
+    /// Returns `true` once the peer has closed the stream (EOF).
     pub fn read_available(&mut self) -> Result<bool> {
         let mut buf = [0u8; 4096];
         loop {
             match self.stream.read(&mut buf) {
-                Ok(0) => {
-                    let first = !self.closed;
-                    self.closed = true;
-                    return Ok(first);
-                }
+                Ok(0) => return Ok(true),
                 Ok(n) => println!("\n------\n{}", String::from_utf8_lossy(&buf[..n])),
                 Err(e) if e.kind() == io::ErrorKind::WouldBlock => return Ok(false),
                 Err(e) if e.kind() == io::ErrorKind::Interrupted => continue,
@@ -59,11 +51,10 @@ mod tests {
     fn open_idle_connection_would_block_without_reporting_eof() {
         let (_server, mut conn) = pair();
         assert!(!conn.read_available().unwrap());
-        assert!(!conn.closed);
     }
 
     #[test]
-    fn drains_more_than_one_buffer_then_reports_eof_exactly_once() {
+    fn drains_more_than_one_buffer_before_reporting_eof() {
         let (mut server, mut conn) = pair();
         // Larger than the 4096-byte read buffer, so one read cannot drain it.
         server.write_all(&vec![b'x'; 10_000]).unwrap();
@@ -75,8 +66,5 @@ mod tests {
             assert!(Instant::now() < deadline, "never saw EOF");
             sleep(Duration::from_millis(1));
         }
-
-        assert!(conn.closed);
-        assert!(!conn.read_available().unwrap(), "EOF must be reported once");
     }
 }
